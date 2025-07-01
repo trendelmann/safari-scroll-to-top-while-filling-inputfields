@@ -1,0 +1,252 @@
+.flexform {
+	box-sizing: border-box;
+	
+	container: flex-form / inline-size;
+	
+	display: flex;
+	flex-direction: column;
+	gap: var(--lumo-space-m);
+	
+	position: relative;
+	min-height: min-content;
+	height: auto;
+	overflow: visible;
+
+	padding-block: var(--lumo-space-m);
+	
+	
+	white-space: normal;
+	-webkit-hyphens: auto;
+	-ms-hyphens: auto;
+	-moz-hyphens: auto;
+	hyphens: auto;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	
+	background-color: var(--lumo-base-color);
+	color: var(--lumo-body-text-color);
+	font-size: var(--lumo-font-size-m);
+	
+	> div {
+		box-sizing: border-box;
+		width: 100%;
+		
+/* 		background-color: var(--lumo-base-color); */
+		background-color: inherit;
+	}
+
+	.flexformseparator {
+		padding-left: 5px;
+		padding-bottom: 8px;
+		white-space: normal;
+		border-bottom: solid 2px var(--lumo-contrast-10pct);
+		display: inline-block;
+		width: 100%;
+	}
+	
+	.flexformtitle {
+		box-sizing: content-box;
+		display: block;
+		
+		line-height: 31px;
+		font-weight: 1000;
+/* 		font-size: 14px; */
+		color: var(--lumo-header-text-color);
+		text-shadow: rgba(255, 255, 255, 0.5) 0px 2px 2px;
+		
+		background-color: #eee;
+		background-image: -webkit-linear-gradient(bottom, #ddd 0%, #fafdff 80%);
+		background-image: linear-gradient(to top, #dddddd 0%, #fafdff 80%);
+		-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #eeeeee;
+		box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #eeeeee;
+		
+		margin-left: -8px;
+		margin-bottom: 18px;
+		margin-top: 12px;
+		padding: 0px;
+		padding-left: 1em;
+		width: unset;
+		
+		> div {
+			margin-left: -8px;
+			display: flex;
+		}
+	}
+	
+	.icon {
+		width: 1em;
+		min-width: 1em;
+		/*max-width: 1em;*/
+		padding: 0px;
+		flex-grow: 0;
+		flex-shrink: 0;
+	}
+	
+	.form-label {
+		color: var(--lumo-secondary-text-color);
+	    font-family: var(--lumo-font-family);
+	    font-size: var(--lumo-font-size-s);
+	    font-weight: 500;	
+	}
+	
+	.content {
+		flex-shrink: 1;
+		min-width: 2px;
+		max-width: 100%;
+	}
+	.content + .content {
+		margin-left: 10px;
+	}
+	.grow {
+		flex-grow: 1;
+	}
+	/*  // TODO: might cause trouble with white-space, inheritance "all"*/
+	.wrap {
+			flex-wrap: wrap;
+	}
+	.name {
+			flex-grow: 0;
+			flex-shrink: 0;
+			min-width: 7em;
+			
+			color: var(--lumo-secondary-text-color);
+			font-family: var(--lumo-font-family);
+			font-size: var(--lumo-font-size-s);
+			font-weight: 500;
+			
+	}
+	
+	.value {
+		flex-grow: 1;
+		flex-shrink: 1;
+		min-width: 3em;
+		color: var(--lumo-body-text-color);
+		
+		.v-caption {
+			display: none;
+		}
+	}
+	
+	.joiner {
+			white-space: nowrap;
+			padding-right: 4px;
+			padding-left: 4px;
+/* 			font-weight: 1000; */
+			flex-shrink: 0.1;
+	}
+	
+	.flexformline,
+	.flexformproperty {
+	   
+		display: flex;
+		position: relative;
+		min-height: 32px;
+		/*    //align-items: stretch;*/
+		/* ACHTUNG: Panels, GridLayout usw. finden die Baseline nicht - dazu HACKs nötig */
+		align-items: baseline;
+		
+		> div {
+			display: flex;
+			position: relative;
+			box-sizing: border-box;
+			align-items: baseline;
+			
+			/* 
+			          REVIEW: des überschreibt das "display" am FlexLayout, wenn es als Value-Child eines flexformproperties verwendet wird.
+			              u.A. deswegen ist dort alles mit "!important" definiert (nich sooo gut).
+			           > div:not(.flex-layout-horizontal):not(.flex-layout-vertical) { 
+			              hilft nicht wirklich; man müsste da noch mehr aussschliessen (, z.Bsp. "v-caption", 
+			              die etwas weiter oben auf "invisible" gesetzt wird. Evtl. dort anpassen??)
+			          */
+			> div {
+				display: block;
+				position: relative;
+				box-sizing: border-box;
+				overflow: hidden;
+			}
+		 }
+		
+		 .name {
+			width: 15%; /*default value, override in code */
+			/*max-width: 25em; */
+		}
+	}
+	
+	.flexformstack {
+	  display: block;
+	  position: relative;
+	
+		> div {
+			display: flex;
+			position: relative;
+			box-sizing: border-box;
+			align-items: baseline;
+			width: 100%;
+			
+			> div {
+				display: block;
+				position: relative;
+				box-sizing: border-box;
+				overflow: hidden;
+			}
+		}
+	}
+	/*-------- HOVER styling ---------------------*/
+	> .flexformstack:not(.blind):hover,
+	> .flexformline:not(.blind):hover,
+	> .flexformproperty:not(.blind):hover {
+		filter: brightness(83%) contrast(1.4) saturate(110%);
+	}
+	
+	.v-caption-flexformvalue {
+		display: none;
+	}
+	
+	.v-checkbox {
+		vertical-align: baseline;
+	}
+	
+	&.contentBorder {
+		padding: 8px;
+		padding-top: 14px;
+		padding-bottom: 14px;
+	}
+
+	
+/* TODO: check if still applies	 */
+
+	> div > div > .flex-layout-vertical::before,
+	> div > div > .flex-layout-horizontal::before {
+		content: "\0020";
+		white-space: pre;
+		font-size: 18px;
+		width: 0px;
+		height: 0px;
+		/* irgendwoher kommt hier ein kleiner abstand, der nicht wegzukriegen ist: */
+		margin-right: -5px;
+	}
+}
+
+@container flex-form ( width < 20rem ) {
+	.flexformline {
+		display: flex;
+		flex-wrap: wrap;
+		
+/* 		& > .name + .value { */
+/* 		} */
+		
+/* 		&:has(.value) > .name { */
+/* 		} */
+		
+		> div {
+			/*display: block;*/
+			width: 100% !important;
+			max-width: 100% !important;
+		}
+		
+		.absoulteFill {
+			display: block !important;
+			position: relative !important;
+		}
+	}
+}

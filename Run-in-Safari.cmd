@@ -1,1 +1,1 @@
-npx playwright wk http://localhost:8082
+npx playwright wk http://localhost:8080

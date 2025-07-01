@@ -3,6 +3,7 @@ package com.example.app.base.ui.view;
 import jakarta.annotation.security.PermitAll;
 
 import com.example.app.base.ui.component.ViewToolbar;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
@@ -10,6 +11,11 @@ import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.orderedlayout.Scroller;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.data.value.HasValueChangeMode;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -37,75 +43,91 @@ always back to the top of the form, if a user interacts with the input fields.
 		addClassNames( LumoUtility.BoxSizing.BORDER, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN,
 					   LumoUtility.Padding.MEDIUM, LumoUtility.Gap.SMALL);
 		
-		add(new ViewToolbar( "Date Picker Overlay Issue" ));
+		add(new ViewToolbar( "Safari Issue" ));
 		add(new Html(issuesDesc));
 		
-		var openDialogButton = new Button("Open Vaadin-Dialog (bad!)...", e -> openNativeDialogWithDateFieldBad());
+		var openDialogButton = new Button("Open Dialog (bad!)...", e -> openNativeDialogWithDateFieldBad());
 		openDialogButton.setMaxWidth( "250px" );
 		add( openDialogButton );
 		
-		openDialogButton = new Button("Open Vaadin-Dialog (good?)...", e -> openNativeDialogWithDateFieldGood());
+		openDialogButton = new Button("Open Dialog (good?)...", e -> openNativeDialogWithDateFieldGood());
 		openDialogButton.setMaxWidth( "250px" );
 		add( openDialogButton );
 
 	}
 	
-	// Test the issue: closing DatePicker overlay by "ESC" also closes our Window;
-	// it also happens with the native Vaadin-Dialog, and this is the naive first attempt
-	// to get it work the way we like to use it (prevent closing, if user decides)
 	private void openNativeDialogWithDateFieldBad() {
 		var nativeDialog = new Dialog();
-		var date = new DatePicker("date-picker" );
-		date.setRequiredIndicatorVisible( true );
-		var closeButton = new Button( "Close (click or press ESC)", e -> nativeDialog.close());
-		closeButton.addClickShortcut( Key.ESCAPE );
-		nativeDialog.add(
-				date,
-				closeButton
-		);
-		nativeDialog.setHeaderTitle( "Open the date select overlay, then press ESC" );
-		nativeDialog.setMinWidth( "410px" );
-		nativeDialog.setMinHeight( "220px" );
+		nativeDialog.setHeaderTitle( "Try to provide input, please" );
+		nativeDialog.setMaxWidth( "400px" );
+		nativeDialog.setMaxHeight( "250px" );
 		nativeDialog.setModal( true );
-		nativeDialog.setCloseOnEsc( false );				// !!! close only per custom button
 		nativeDialog.setCloseOnOutsideClick( false );		// !!! close only per custom button
-		nativeDialog.setResizable( true );
 		nativeDialog.setDraggable( true );
+		
+		nativeDialog.add( new Scroller( buildSafariJumpingContent() ) );
 		nativeDialog.open();
 	}
 	
-	// Test the issue: closing DatePicker overlay by "ESC" also closes our Window;
-	// it also happens with the native Vaadin-Dialog, and this is the naive first attempt
-	// to get it work the way we like to use it (prevent closing, if user decides)
 	private void openNativeDialogWithDateFieldGood() {
 		var nativeDialog = new Dialog();
-		var date = new DatePicker("date-picker" );
-		date.setRequiredIndicatorVisible( true );
-		var closeButton = new Button( "Close (click or press ESC)", e -> askYesNoThenClose(nativeDialog));
-		//closeButton.addClickShortcut( Key.ESCAPE ); // not working - italso gets ESC from DatePicker overlay
-		nativeDialog.add(
-				date,
-				closeButton
-		);
-		nativeDialog.addDialogCloseActionListener( e -> askYesNoThenClose(e.getSource()) );
-		nativeDialog.setHeaderTitle( "Open the date select overlay, then press ESC" );
-		nativeDialog.setMinWidth( "410px" );
-		nativeDialog.setMinHeight( "220px" );
+		nativeDialog.setHeaderTitle( "Provide input, please" );
+		nativeDialog.setMaxWidth( "400px" );
+		nativeDialog.setMaxHeight( "250px" );
 		nativeDialog.setModal( true );
-		nativeDialog.setCloseOnEsc( true );				// !!! close only per custom button
-		nativeDialog.setCloseOnOutsideClick( true );	// !!! close only per custom button
-		nativeDialog.setResizable( true );
+		nativeDialog.setCloseOnOutsideClick( false );		// !!! close only per custom button
 		nativeDialog.setDraggable( true );
+		
+		nativeDialog.add( new Scroller( buildNormalContent() ) );
 		nativeDialog.open();
 	}
 	
-	private void askYesNoThenClose(Dialog owner) {
-		var ask = new ConfirmDialog("Closing...",
-									"Really wanna close this?",
-									"Yes, please", e -> owner.close() );
-		ask.setCancelable( true );
-		ask.setCancelButton( "No no no...", e -> e.getSource().close() );
-		ask.open();
+	Component buildSafariJumpingContent() {
+		var content = new Div();
+		content.addClassName( "flexform" );
+		content.add( new Html(
+				"""
+						<div>
+						<h4>Problematic input form</h4>
+						There the window flickers and the form itself scrolls
+						always back to the top of the form, if you interacts with the input fields.
+						""" ) );
+		var textArea = new TextArea();
+		textArea.addClassName( "flexformline" );
+		
+		textArea.setWidthFull();
+		textArea.setValueChangeMode( ValueChangeMode.LAZY );
+		textArea.setValueChangeTimeout( HasValueChangeMode.DEFAULT_CHANGE_TIMEOUT );
+		// TODO: this seems to block other keys like ESC:
+// 		when still in focus, ESC doesn't close a window/editor
+//		maybe there's a way to filter key down events?
+		ElementUtils.stopKeyDownEventPropagation( this );
+		ElementUtils.stopInputEventPropagation( this );
+		
+		textArea.setMinRows( 3 );
+		
+		content.add( textArea );
+		var dp = new DatePicker();
+		dp.addClassName( "flexformline" );
+		content.add( dp );
+		return content;
 	}
 	
+	Component buildNormalContent() {
+		var content = new VerticalLayout();
+		content.addClassName( "flexform" );
+		content.add( new Html(
+				"""
+						<div>
+						<h4>Fine input form</h4>
+						There the window stays and the form itself did not scroll
+						always back to the top of the form, if you interacts with the input fields.
+						""" ) );
+		
+		var textArea = new TextArea();
+		textArea.addClassName( "flexformline" );
+		content.add( textArea );
+		
+		return content;
+	}
 }
